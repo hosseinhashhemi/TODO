@@ -9,12 +9,38 @@ const fetchTasks = createAsyncThunk("tasks/fetchTasks", async () => {
   return data;
 });
 
+const createTask = createAsyncThunk("tasks/createTask", async (task: Task) => {
+  console.log("hi");
+  const response = await AsyncStorage.getItem("tasks");
+  const data = response != null ? JSON.parse(response) : [];
+  data.push({
+    id: uuid(),
+    title: task.title,
+    description: task?.description,
+    date: Date().toString(),
+    completed: false,
+  });
+  await AsyncStorage.setItem("tasks", JSON.stringify(data));
+  return data;
+});
+
 const deleteTask = createAsyncThunk("tasks/deleteTask", async (task: Task) => {
   const response = await AsyncStorage.getItem("tasks");
   const data = response != null ? JSON.parse(response) : [];
   const index = data.findIndex((t: Task) => t.id === task.id);
   if (index !== -1) {
     data.splice(index, 1);
+  }
+  await AsyncStorage.setItem("tasks", JSON.stringify(data));
+  return data;
+});
+
+const editTask = createAsyncThunk("tasks/editTask", async (task: Task) => {
+  const response = await AsyncStorage.getItem("tasks");
+  const data = response != null ? JSON.parse(response) : [];
+  const index = data.findIndex((t: Task) => t.id === task.id);
+  if (index !== -1) {
+    data[index] = task;
   }
   await AsyncStorage.setItem("tasks", JSON.stringify(data));
   return data;
@@ -44,7 +70,15 @@ const taskSlice = createSlice({
       return action.payload;
     });
 
+    builder.addCase(createTask.fulfilled, (state, action) => {
+      return action.payload;
+    });
+
     builder.addCase(deleteTask.fulfilled, (state, action) => {
+      return action.payload;
+    });
+
+    builder.addCase(editTask.fulfilled, (state, action) => {
       return action.payload;
     });
 
