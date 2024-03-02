@@ -1,4 +1,3 @@
-export default function EditTask({}: {}): any {}
 import { useEffect, useState } from "react";
 import { RootState } from "../../constants/Interfaces";
 import { Text, TextInput, View } from "react-native";
